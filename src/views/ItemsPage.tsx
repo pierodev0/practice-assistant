@@ -1,79 +1,43 @@
 import { useState } from "react";
+import type { DrafItem } from "../types";
+import { useAppStore } from "../store/store";
+import ItemForm from "../components/ItemForm";
+import ItemDetail from "../components/ItemDetail";
 
 const ItemsPage = () => {
-  const [tabbed, setIsTabbed] = useState(true);
+  const [isOpen, setIsOpen] = useState(true);
+
+  const addItem = useAppStore((state) => state.addItem);
+  const items = useAppStore((state) => state.items);
+
+  function createItem(data: DrafItem) {
+    setIsOpen(true);
+    addItem(data);
+  }
+
   return (
     <section className="grid grid-cols-2">
       <div>
-        {tabbed ? (
-          <button
-            className="btn btn-outline btn-primary w-full"
-            onClick={() => setIsTabbed((s) => !s)}
-          >
-            Add new Item
-          </button>
-        ) : (
+        {isOpen ? (
           <div className="space-y-2">
-            <div className="flex flex-col gap-2">
-              <label
-                htmlFor=""
-                className="text-base-content/70 uppercase font-bold"
-              >
-                Title
-              </label>
-              <input type="text" className="input input-neutral w-full" />
-            </div>
-            <div className="flex flex-col gap-2">
-              <label
-                htmlFor=""
-                className="text-base-content/70 uppercase font-bold"
-              >
-                Description
-              </label>
-              <input type="text" className="input input-neutral w-full" />
-            </div>
-            <div className="flex flex-col gap-2">
-              <label
-                htmlFor=""
-                className="text-base-content/70 uppercase font-bold"
-              >
-                Duration
-              </label>
-              <input type="text" className="input input-neutral w-full" />
-            </div>
-            <div className="flex flex-col gap-2">
-              <label
-                htmlFor=""
-                className="text-base-content/70 uppercase font-bold"
-              >
-                Related Link
-              </label>
-              <input type="text" className="input input-neutral w-full" />
-            </div>
-            <div className="flex flex-col gap-2">
-              <label
-                htmlFor=""
-                className="text-base-content/70 uppercase font-bold"
-              >
-                Statistic Name
-              </label>
-              <input type="text" className="input input-neutral w-full" />
-            </div>
-            <div className="flex gap-2 justify-start">
-              <button
-                className="btn btn-soft"
-                onClick={() => setIsTabbed(true)}
-              >
-                Save
-              </button>
-              <button
-                className="btn btn-soft"
-                onClick={() => setIsTabbed(true)}
-              >
-                Cancel
-              </button>
-            </div>
+            {items.length == 0 ? (
+              <p className="italic text-base-content/60 text-center py-2">No hay items</p>
+            ) : (
+              <div>
+                {items.map((item) => (
+                  <ItemDetail item={item} />
+                ))}
+              </div>
+            )}
+            <button
+              className="btn btn-outline btn-primary w-full"
+              onClick={() => setIsOpen((s) => !s)}
+            >
+              Add new Item
+            </button>
           </div>
+        ) : (
+          <ItemForm onSave={createItem} />
         )}
       </div>
       <div></div>
